@@ -1,6 +1,6 @@
 # NTU CSIE Computer Networks - 2022 Fall
 ## Socket Programming Project
-- Name: 徐聖淮
+- Name: Alex Hsu
 - ID: R10525073
 - E-mail: r10525073@g.ntu.edu.tw
 
@@ -17,3 +17,4 @@
 
 ## Note
 - Our website: <>
+- Using IPv4 TCP connect
