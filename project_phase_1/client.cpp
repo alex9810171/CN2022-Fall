@@ -5,18 +5,18 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#define PORT 80
+#define PORT 1024
 #define MAX_MESSAGE_LENGTH 100
 
 int main(int argc, char *argv[]){
     // create IPv4 TCP socket
     int sockfd = 0;
-    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
-        perror("socket() error: ");
+    if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1){
+        perror("[!] socket() error: ");
         return(-1);
     }
 
-    // initial & connect to HTTP default port 80
+    // initial local address & HTTP port
     struct sockaddr_in address;
     bzero(&address,sizeof(address));                    // intialize struct bits with 0
     address.sin_family = AF_INET;
@@ -25,9 +25,19 @@ int main(int argc, char *argv[]){
 
     // connect to server
     if(connect(sockfd, (struct sockaddr *)&address, sizeof(address)) == -1){
-        perror("connect() error: ");
+        perror("[!] connect() error: ");
         return(-1);
     }
+    printf("[#] Client app activated!\n");
+
+    // receive welcome message
+    char welcome_message[] = {};
+    if ((recv(sockfd, welcome_message, MAX_MESSAGE_LENGTH,0)) == -1){
+    	perror("[!] Receive welcome message fail: ");
+    	return(-1);
+    }
+    welcome_message[sizeof(welcome_message)-1] = '\0';
+    printf("%s\n", welcome_message);
 
     // send message to server
     while(1){
@@ -38,23 +48,23 @@ int main(int argc, char *argv[]){
         ssize_t receive_number = 0;
 
         // user input message
-        printf("Input string:");
-        scanf("%s", &message_buffer);
+        printf("[>] Input string: ");
+        scanf("%s", message_buffer);
         message_buffer[strlen(message_buffer)]='\0';    // null terminator
         if((strlen(message_buffer)) > MAX_MESSAGE_LENGTH){
-            printf("Only supports sending fewer than 100 characters.");
+            printf("[!] Only supports sending fewer than 100 characters.");
             return(-1);
         }
 
         // send message to server
         if((send_number = send(sockfd, message_buffer, MAX_MESSAGE_LENGTH, 0)) == -1){
-            perror("send() error.");
+            perror("[!] send() error: ");
             return(-1);
         }
 
         // receive message from server
         if((receive_number = recv(sockfd, receive_buffer, MAX_MESSAGE_LENGTH,0)) == -1){
-            perror("recv() error.");
+            perror("[!] recv() error: ");
             return(-1);
         }
 
