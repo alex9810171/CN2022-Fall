@@ -9,7 +9,7 @@
 #define MAX_MESSAGE_LENGTH 100
 
 int main(int argc, char *argv[]){
-    // create IPv4 TCP socket, if fail -> return -1
+    // create IPv4 TCP socket
     int sockfd = 0;
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
         perror("socket() error: ");
@@ -31,9 +31,13 @@ int main(int argc, char *argv[]){
 
     // send message to server
     while(1){
+        char message_buffer[MAX_MESSAGE_LENGTH] = {};
+        char receive_buffer[MAX_MESSAGE_LENGTH] = {};
+        char welcome_buffer[MAX_MESSAGE_LENGTH] = {};
+        ssize_t send_number = 0;
+        ssize_t receive_number = 0;
+
         // user input message
-        char message_buffer[MAX_MESSAGE_LENGTH], receive_buffer[MAX_MESSAGE_LENGTH], welcome_buffer[MAX_MESSAGE_LENGTH];
-        ssize_t send_number, receive_number;
         printf("Input string:");
         scanf("%s", &message_buffer);
         message_buffer[strlen(message_buffer)]='\0';    // null terminator
@@ -48,14 +52,16 @@ int main(int argc, char *argv[]){
             return(-1);
         }
 
-        // send message to server
-        if((receive_number = recv(sockfd, receive_buffer, MAX_MESSAGE_LENGTH,0)) == -1)
-        {
+        // receive message from server
+        if((receive_number = recv(sockfd, receive_buffer, MAX_MESSAGE_LENGTH,0)) == -1){
             perror("recv() error.");
             return(-1);
         }
 
-
+        // quit client condition
+        if(strcmp(receive_buffer, "quit") == 0){
+            break;
+        }
     }
 
     // close socket and exit
