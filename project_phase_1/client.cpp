@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#define PORT 1024
+#define PORT 1025               // Port for www webpage (Ports below 1024 are considered "privileged")
 #define MAX_MESSAGE_LENGTH 100
 
 int main(int argc, char *argv[]){
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
         perror("[!] connect() error: ");
         return(-1);
     }
-    printf("[#] Client app activated!\n");
+    printf("[*] Client app activated!\n");
 
     // receive welcome message
     char welcome_message[] = {};

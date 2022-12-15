@@ -1,53 +1,62 @@
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
-// Ports below 1024 are considered "privileged", above and including 1024 is "free to use" by anyone.
-#define PORT 1024
+#define PORT 1025               // Port for www webpage (Ports below 1024 are considered "privileged")
 #define MAX_MESSAGE_LENGTH 100
-#define MAX_NUMBER_CLIENT 20
+#define BUFFER_SIZE 1024
 
 int main(){
-    // create IPv4 TCP socket
+    // Server response message
+    char resp[] = "HTTP/1.0 200 OK\r\n"             // Request line
+                  "Server: webserver-c\r\n"         // Headers
+                  "Content-type: text/html\r\n\r\n"
+                  "<html>R10525073</html>\r\n";     // Body
+
+    // Create IPv4 TCP socket
     int sockfd = 0;
     if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1){
         perror("[!] socket() error: ");
         return(-1);
     }
+    printf("[*] Socket created successfully!\n");
 
-    // let connect port be reusable
+    // Let connect port be reusable
     int opt = SO_REUSEADDR;
-    setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-    // initial local address & HTTP port
-    struct sockaddr_in server_address;
-    struct sockaddr_in client_address;
-    bzero(&server_address,sizeof(server_address));              // intialize struct bits with 0
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(PORT);                      // convert host to network short
-    server_address.sin_addr.s_addr = htonl(INADDR_ANY);         // convert host to network long
+    // Initial server & client address & HTTP port
+    struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
+    int server_addrlen = sizeof(server_addr);
+    int client_addrlen = sizeof(client_addr);
+    bzero(&server_addr, sizeof(server_addr));               // Intialize struct bits with 0
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);                     // Convert host to network short
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);        // Convert host to network long
     
-    // let the socket bind to port
-    int bindfd = 0;
-    if((bindfd = bind(sockfd, (struct sockaddr *)&server_address, sizeof(server_address))) == -1){
+    // Let the socket bind to port
+    if ((bind(sockfd, (struct sockaddr *)&server_addr, server_addrlen)) == -1)
+    {
         perror("[!] bind() error: ");
         return(-1);
     }
+    printf("[*] Socket bound to address successfully!\n");
 
-    // let the socket be connectable
+    // Let the socket be connectable
     int listenfd = 0;
-    if((listenfd = listen(sockfd, MAX_NUMBER_CLIENT)) == -1){
+    if((listenfd = listen(sockfd, SOMAXCONN)) == -1){
         perror("[!] listen() error: ");
         return(-1);
     }
-    printf("[#] Server app activated!\n");
+    printf("[*] Server listening for connections...\n");
 
-    // get client connection
+    // Get client connection
     int connectfd = 0;
     socklen_t addrlen;
-    if((connectfd = accept(sockfd, (struct sockaddr *)&client_address, &addrlen)) == -1){
+    if((connectfd = accept(sockfd, (struct sockaddr *)&client_addr, &addrlen)) == -1){
         perror("[!] accept() error: ");
         return(-1);
     }
@@ -60,7 +69,7 @@ int main(){
     }
 
     // notification of connection
-    printf("[#] You got a connection from client IP:%s, PORT:%d\n", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
+    printf("[#] You got a connection from client IP:%s, PORT:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
     while(1){
         char receive_buffer[MAX_MESSAGE_LENGTH] = {};
@@ -73,7 +82,7 @@ int main(){
             perror("[!] recv() error: ");
             return(-1);
         }
-        printf("[#] Received string: %s\n", receive_buffer);
+        printf("[*] Received string: %s\n", receive_buffer);
 
         // send message from server
         strcpy(send_buffer, receive_buffer);
@@ -84,7 +93,7 @@ int main(){
         }
 
         if(strcmp(receive_buffer, "quit") == 0){
-            printf("[#] Server exit!\n");
+            printf("[*] Server exit!\n");
             close(connectfd);
             break;
         }
