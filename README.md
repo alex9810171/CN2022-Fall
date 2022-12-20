@@ -51,4 +51,4 @@ node server.js
 - 一對一視訊通話(4): 加入通話及掛斷機制 <https://ithelp.ithome.com.tw/articles/10279236>
 - 解決websocket連線問題: <https://stackoverflow.com/questions/44575978>
 - 查port: `netstat -tulpn`
-- 放在背景執行: `nohup sh RUN.sh`
+- 放在背景執行: `nohup sh RUN.sh &`
