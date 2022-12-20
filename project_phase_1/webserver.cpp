@@ -4,7 +4,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define PORT 8080   // Port for www webpage
+#define PORT 1025   // Port for www webpage
 #define BUFFER_SIZE 1024
 
 int main(){
