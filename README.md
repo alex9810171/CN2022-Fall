@@ -48,5 +48,7 @@ node server.js
 - Linux環境用c++建立Socket連線: <https://snsd0805.github.io/jekyll/update/2019/05/27/%E7%AD%86%E8%A8%98-Linux%E7%92%B0%E5%A2%83%E7%94%A8c++%E5%BB%BA%E7%AB%8BSocket%E9%80%A3%E7%B7%9A.html>
 - Linux平台C语言Socket编程练习之TCP套接字: <https://hackfun.org/2016/11/03/Linux%E5%B9%B3%E5%8F%B0C%E8%AF%AD%E8%A8%80Socket%E7%BC%96%E7%A8%8B%E7%BB%83%E4%B9%A0%E4%B9%8BTCP%E5%A5%97%E6%8E%A5%E5%AD%97/>
 - Making a simple HTTP webserver in C: <https://bruinsslot.jp/post/simple-http-webserver-in-c/>
+- 一對一視訊通話(4): 加入通話及掛斷機制 <https://ithelp.ithome.com.tw/articles/10279236>
 - 解決websocket連線問題: <https://stackoverflow.com/questions/44575978>
 - 查port: `netstat -tulpn`
+- 放在背景執行: `nohup sh RUN.sh`
